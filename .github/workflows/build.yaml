@@ -67,7 +67,7 @@ jobs:
         # Only on main, so a PR from a fork can still BUILD — which is where
         # the import check runs — without holding push credentials.
         if: github.event_name == 'push'
-        uses: docker/login-action@v3
+        uses: docker/login-action@v4
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
