@@ -1,0 +1,21 @@
+# Python
+__pycache__/
+*.pyc
+.venv/
+
+# Test and coverage artifacts
+.coverage
+.coverage.*
+.pytest_cache/
+htmlcov/
+
+# Never commit real credentials or a token cache. Nothing here reads a .env —
+# configuration comes from the environment — but a developer running this
+# locally will reach for one, and the shape of the filename varies.
+.env
+.env.*
+!.env.example
+*.bak
+*.bak.*
+garmin-tokens/
+state.json

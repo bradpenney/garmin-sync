@@ -1,0 +1,54 @@
+# Three ecosystems, because this repo has three independent ways to go stale.
+#
+# WHY THIS FILE EXISTS AT ALL. The build workflow references its actions by
+# major tag and carries a comment saying they are "pinned to SHAs by
+# Dependabot's github-actions ecosystem on its first run". That sentence is only
+# TRUE if this file exists. It was copied into this repo before this file did,
+# which made it a comment asserting something that would never happen — the
+# exact defect this estate keeps finding. Stated here so the two stay coupled.
+version: 2
+updates:
+  # The Python dependencies. `garminconnect` tracks an undocumented, unstable
+  # third-party API; when Garmin changes something, the fix arrives as a release
+  # here and nothing else will tell us.
+  - package-ecosystem: "pip"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "09:00"
+      timezone: "America/Halifax"
+    open-pull-requests-limit: 5
+    labels: ["dependencies", "python"]
+    commit-message:
+      prefix: "deps"
+      include: "scope"
+
+  # The base image. Pinned by tag AND digest, so Dependabot has a version to
+  # compare and bumps both together — a bare digest would be immutable but
+  # unwatchable.
+  - package-ecosystem: "docker"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "09:00"
+      timezone: "America/Halifax"
+    open-pull-requests-limit: 5
+    labels: ["dependencies", "docker"]
+    commit-message:
+      prefix: "deps"
+      include: "scope"
+
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "09:00"
+      timezone: "America/Halifax"
+    open-pull-requests-limit: 5
+    labels: ["dependencies", "github-actions"]
+    commit-message:
+      prefix: "ci"
+      include: "scope"

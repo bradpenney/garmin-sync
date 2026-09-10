@@ -1,0 +1,42 @@
+# Tooling config. There is no package here — one script and its tests — so this
+# file exists purely to pin the quality bar in a place CI and a human both read.
+
+[tool.black]
+line-length = 88
+
+[tool.pytest.ini_options]
+addopts = "-q --cov=garmin_sync --cov-report=term-missing --cov-fail-under=95"
+testpaths = ["tests"]
+
+[tool.coverage.run]
+source = ["garmin_sync"]
+
+[tool.coverage.report]
+# 95% is measured against the LOGIC. The network calls and main() carry
+# `pragma: no cover` with the reasoning stated at their definition: mocking
+# `requests` would assert that this file calls the functions this file calls.
+# They are covered by running the job for real.
+exclude_lines = [
+    "pragma: no cover",
+    "if __name__ == .__main__.:",
+]
+fail_under = 95
+
+[tool.pylint.main]
+# The script is deliberately flat — module-level config read once at import, so
+# it can fail before doing any work. That shape trips two checks that are wrong
+# here rather than being a real finding.
+disable = [
+    "invalid-name",              # module-level CONSTANTS read from the environment
+    "broad-exception-caught",    # one activity failing must not stop the run
+]
+
+[tool.pylint.design]
+# main() is a linear orchestration: read state, log in twice, loop, save. Its
+# locals are named steps, not accumulated complexity, and splitting it to
+# satisfy a counter would scatter an ordering that is load-bearing (state is
+# written last, on purpose). Raised deliberately rather than silenced globally.
+max-locals = 20
+
+[tool.pylint.format]
+max-line-length = 88

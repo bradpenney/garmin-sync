@@ -1,0 +1,98 @@
+name: Build
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  # Keyed by ref. A repo-wide constant group makes concurrent PRs cancel each
+  # other's builds, and a cancelled run reads as a failure — the same trap
+  # already filed against bindy's docs workflow.
+  group: build-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    name: Lint and test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+
+      - name: Install
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install pytest pytest-cov pylint black
+
+      # Formatting is checked, never applied in CI. A workflow that reformats
+      # and pushes turns every build into a commit nobody reviewed.
+      - name: black --check
+        run: black --check garmin_sync.py tests/
+
+      # 10/10 or fail. The two project-wide disables and the single scoped
+      # `no-member` are in pyproject.toml with their reasoning; anything new has
+      # to be argued for in the same place rather than waved through here.
+      - name: pylint
+        run: pylint --fail-under=10 garmin_sync.py
+
+      # Coverage is gated at 95% of the LOGIC. The network calls carry
+      # `pragma: no cover` because mocking `requests` would assert that this
+      # file calls the functions this file calls.
+      - name: pytest
+        run: pytest
+
+  build:
+    name: Build and push
+    needs: test
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+      id-token: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: docker/setup-buildx-action@v3
+
+      - name: Log in to GHCR
+        # Only on main, so a PR from a fork can still BUILD — which is where
+        # the import check runs — without holding push credentials.
+        if: github.event_name == 'push'
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build
+        id: build
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          # The Dockerfile imports garminconnect and requests as its last build
+          # step. A dependency that resolves but cannot import fails HERE, in a
+          # PR, rather than at 04:30 in a CronJob nothing is watching.
+          push: ${{ github.event_name == 'push' }}
+          tags: |
+            ghcr.io/${{ github.repository }}:latest
+            ghcr.io/${{ github.repository }}:${{ github.sha }}
+          provenance: true
+          sbom: true
+
+      - name: Report the digest to deploy
+        if: github.event_name == 'push'
+        run: |
+          echo "### Deploy this digest" >> "$GITHUB_STEP_SUMMARY"
+          echo '```' >> "$GITHUB_STEP_SUMMARY"
+          echo "image: ghcr.io/${{ github.repository }}@${{ steps.build.outputs.digest }}" >> "$GITHUB_STEP_SUMMARY"
+          echo '```' >> "$GITHUB_STEP_SUMMARY"
+          echo "Pin this digest in the CronJob manifest in your config repo." >> "$GITHUB_STEP_SUMMARY"

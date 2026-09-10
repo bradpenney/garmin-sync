@@ -1,0 +1,11 @@
+# Pinned to EXACTLY what the host venv was running at the migration. Migrating
+# and upgrading at the same time makes any failure ambiguous. Bump these
+# deliberately, afterwards, one at a time.
+#
+# Transitive dependencies are resolved at build time rather than hash-locked
+# here. That is a considered boundary, not laziness: the deployable artifact is
+# an image DIGEST and the deployment pins that digest. Whatever pip resolved is
+# frozen inside it, so the running artifact is reproducible even though this
+# file is not a lockfile.
+garminconnect==0.3.3
+requests==2.34.2
