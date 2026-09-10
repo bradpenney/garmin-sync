@@ -13,7 +13,7 @@
 # Base pinned by TAG AND DIGEST: the tag is what a human and Dependabot read,
 # the digest is what actually gets pulled, so the build is reproducible even if
 # the tag is moved.
-FROM python:3.13-slim@sha256:9d2e5553305c7c7b0097999bb17187c69b921ccd6bc9d40e4bb5ebe652c00285
+FROM python:3.14-slim@sha256:cad9a2c871761c413caa6fdd6441c783451e740a48aaeba60ae62a8b53525ef6
 # Digest read from the registry on 2026-09-09, not transcribed from memory.
 # Verify before changing it:
 #   docker inspect python:3.13-slim --format '{{index .RepoDigests 0}}'
