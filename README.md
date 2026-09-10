@@ -1,5 +1,23 @@
 # garmin-sync
 
+[![build](https://img.shields.io/github/actions/workflow/status/bradpenney/garmin-sync/build.yaml?branch=main&label=build&logo=githubactions&logoColor=white)](https://github.com/bradpenney/garmin-sync/actions/workflows/build.yaml)
+[![pylint](https://img.shields.io/badge/pylint-10.00%2F10-brightgreen?logo=python&logoColor=white)](pyproject.toml)
+[![coverage](https://img.shields.io/badge/coverage-100%25%20of%20logic-brightgreen?logo=pytest&logoColor=white)](tests/test_garmin_sync.py)
+[![code style: black](https://img.shields.io/badge/code%20style-black-000000)](https://github.com/psf/black)
+[![licence](https://img.shields.io/badge/licence-MIT-blue)](LICENSE)
+
+<!-- The build badge is LIVE — it reads the workflow and goes red on a failure.
+The other four are STATIC, and that is a deliberate limitation worth knowing:
+they assert what CI enforces (pylint --fail-under=10, --cov-fail-under=95,
+black --check) rather than measuring it. CI is the control; these are labels
+for it. If the gates in pyproject.toml change, these have to change by hand —
+a static badge that has drifted is worse than no badge, because it reads as
+evidence.
+
+"coverage 100% of logic" is precise, not spin: the HTTP functions carry
+`pragma: no cover` and are excluded, for the reasons given at their definition
+in garmin_sync.py. -->
+
 Turn Garmin Connect activities into [Wanderer](https://github.com/Flomp/wanderer)
 trails, as a Kubernetes CronJob.
 
