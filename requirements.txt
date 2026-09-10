@@ -7,5 +7,5 @@
 # an image DIGEST and the deployment pins that digest. Whatever pip resolved is
 # frozen inside it, so the running artifact is reproducible even though this
 # file is not a lockfile.
-garminconnect==0.3.3
+garminconnect==0.3.11
 requests==2.34.2
