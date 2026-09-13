@@ -181,6 +181,13 @@ def test_known_activity_types_map_to_categories(monkeypatch, tmp_path):
     assert m.CATEGORY_MAP["mountain_biking"] == "Biking"
 
 
+def test_garmin_catch_all_is_the_utv_category(monkeypatch, tmp_path):
+    """The watch reports the SxS profile as Garmin's generic "other" (seen
+    2026-09-12); nothing else on this instance is recorded as Other."""
+    m = load(monkeypatch, tmp_path)
+    assert m.CATEGORY_MAP["other"] == "UTV"
+
+
 def test_an_unknown_type_maps_to_empty_and_is_not_an_error(monkeypatch, tmp_path):
     """A new Garmin type must not stop the sync — the trail is created without
     a category and the run logs a warning."""

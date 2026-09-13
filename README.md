@@ -66,6 +66,9 @@ history rather than holes.
 
 An unmapped activity type is not an error: the trail is created without a
 category and the run logs a warning naming the type to add to `CATEGORY_MAP`.
+Garmin's catch-all `other` is mapped to `UTV` because that is what the watch
+reports for a side-by-side ride; if you record other things as "Other", change
+or remove that entry.
 
 ---
 

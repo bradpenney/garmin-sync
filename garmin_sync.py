@@ -97,8 +97,14 @@ _start = os.environ.get("GARMIN_SYNC_START_DATE", "")
 START_DATE = date.fromisoformat(_start) if _start else None
 
 # Garmin activityType.typeKey → Wanderer category name
-# Add your SxS custom type key here once you see it logged as "unmapped"
+#
+# "other" is Garmin's catch-all, and it is what the watch reports for the
+# side-by-side profile (seen 2026-09-12: "Halifax SxS", activity_type=other,
+# synced with no category). This instance records nothing else as Other, so
+# the catch-all IS the UTV category here. If that ever changes, the wrong
+# category on a trail is a one-field edit; a missing one was the status quo.
 CATEGORY_MAP = {
+    "other": "UTV",
     "walking": "Walking",
     "running": "Walking",
     "trail_running": "Hiking",
