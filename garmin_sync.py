@@ -215,11 +215,12 @@ def garmin_login():  # pragma: no cover - network
             sys.exit(1)
         log("no cached tokens, authenticating interactively", level="warn")
         client.login()
-        # pylint: disable=no-member
-        # `garth` is attached to the Garmin client at runtime, so pylint's
-        # static view cannot see it. A blanket disable would hide genuine
-        # no-member bugs, so this is scoped to the one line that needs it.
-        client.garth.dump(str(GARMIN_TOKEN_DIR))
+        # garminconnect 0.3 dropped garth: the session lives on `client.client`
+        # and writes `garmin_tokens.json` itself. The old `client.garth.dump()`
+        # raised AttributeError right after a successful interactive login, so
+        # seeding the cache by this path never saved a token (found 2026-11-12;
+        # true of 0.3.3 and 0.3.20 alike).
+        client.client.dump(str(GARMIN_TOKEN_DIR))
         log("cached Garmin tokens for future runs")
     return client
 
